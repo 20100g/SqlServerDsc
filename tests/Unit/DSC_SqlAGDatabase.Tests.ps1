@@ -339,25 +339,26 @@ try
                 #endregion Server mocks
 
                 #region Invoke Query Mock
+                $mockDataSetQueryFileExist = New-MockDataSet  -ColumnNames @('File exists', 'File is a Directory', 'Parent Directory Exists') `
+                    -Rows @(@{
+                        'File exists'             = 0
+                        'File is a Directory'     = 1
+                        'Parent Directory Exists' = 1
+                    })
 
                 $mockResultInvokeQueryFileExist = {
-                    return @{
-                        Tables = @{
-                            Rows = @{
-                                'File is a Directory' = 1
-                            }
-                        }
-                    }
+                    return $mockDataSetQueryFileExist
                 }
 
+                $mockDataSetQueryFileNotExist = New-MockDataSet   -ColumnNames @('File exists', 'File is a Directory', 'Parent Directory Exists') `
+                    -Rows @(@{
+                        'File exists'             = 0
+                        'File is a Directory'     = 0
+                        'Parent Directory Exists' = 0
+                    })
+
                 $mockResultInvokeQueryFileNotExist = {
-                    return @{
-                        Tables = @{
-                            Rows = @{
-                                'File is a Directory' = 0
-                            }
-                        }
-                    }
+                    return $mockDataSetQueryFileNotExist
                 }
 
                 $mockInvokeQueryParameterRestoreDatabase = {
@@ -735,25 +736,26 @@ REVERT'
                     #endregion Server mocks
 
                     #region Invoke Query Mock
+                    $mockDataSetQueryFileExist = New-MockDataSet  -ColumnNames @('File exists', 'File is a Directory', 'Parent Directory Exists') `
+                        -Rows @(@{
+                            'File exists'             = 0
+                            'File is a Directory'     = 1
+                            'Parent Directory Exists' = 1
+                        })
 
                     $mockResultInvokeQueryFileExist = {
-                        return @{
-                            Tables = @{
-                                Rows = @{
-                                    'File is a Directory' = 1
-                                }
-                            }
-                        }
+                        return $mockDataSetQueryFileExist
                     }
 
+                    $mockDataSetQueryFileNotExist = New-MockDataSet -ColumnNames @('File exists', 'File is a Directory', 'Parent Directory Exists') `
+                        -Rows @(@{
+                            'File exists'             = 0
+                            'File is a Directory'     = 0
+                            'Parent Directory Exists' = 0
+                        })
+
                     $mockResultInvokeQueryFileNotExist = {
-                        return @{
-                            Tables = @{
-                                Rows = @{
-                                    'File is a Directory' = 0
-                                }
-                            }
-                        }
+                        return $mockDataSetQueryFileNotExist
                     }
 
                     $mockInvokeQueryParameterRestoreDatabase = {
@@ -1020,7 +1022,7 @@ REVERT'
                             Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                             Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                             Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                                Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                             $mockServerObject.Databases['DB1'].($prerequisiteCheck.Key) = $originalValue
                         }
@@ -1086,7 +1088,7 @@ REVERT'
                             Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                             Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                             Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                                Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                             $mockServerObject.Databases['DB1'].($filestreamProperty.Key) = $originalValue
                         }
@@ -1503,9 +1505,9 @@ REVERT'
                     }
                 }
             }
-#        }
+            #        }
 
-#        Describe 'SqlAGDatabase\Set-TargetResource' -Tag 'Set Automatic' {
+            #        Describe 'SqlAGDatabase\Set-TargetResource' -Tag 'Set Automatic' {
             Context 'Tests that was moved into its own context block to prevent intermittent fails (see issue #1532) - workaround until proper refactor with seeding on automatic' {
                 BeforeAll {
                     #region Parameter Mocks
@@ -1796,25 +1798,26 @@ REVERT'
                     #endregion Server mocks
 
                     #region Invoke Query Mock
+                    $mockDataSetQueryFileExist = New-MockDataSet -ColumnNames @('File exists', 'File is a Directory', 'Parent Directory Exists') `
+                        -Rows @(@{
+                            'File exists'             = 0
+                            'File is a Directory'     = 1
+                            'Parent Directory Exists' = 1
+                        })
 
                     $mockResultInvokeQueryFileExist = {
-                        return @{
-                            Tables = @{
-                                Rows = @{
-                                    'File is a Directory' = 1
-                                }
-                            }
-                        }
+                        return $mockDataSetQueryFileExist
                     }
 
+                    $mockDataSetQueryFileNotExist = New-MockDataSet -ColumnNames @('File exists', 'File is a Directory', 'Parent Directory Exists') `
+                        -Rows @(@{
+                            'File exists'             = 0
+                            'File is a Directory'     = 0
+                            'Parent Directory Exists' = 0
+                        })
+
                     $mockResultInvokeQueryFileNotExist = {
-                        return @{
-                            Tables = @{
-                                Rows = @{
-                                    'File is a Directory' = 0
-                                }
-                            }
-                        }
+                        return $mockDataSetQueryFileNotExist
                     }
 
                     $mockInvokeQueryParameterRestoreDatabase = {
@@ -1871,7 +1874,7 @@ REVERT'
                 }
 
                 Context 'When Ensure is Present' {
-                     It 'Should add the specified databases to the availability group.' {
+                    It 'Should add the specified databases to the availability group.' {
                         { Set-TargetResource @mockSetTargetResourceParameters } | Should -Not -Throw
 
                         Assert-MockCalled -CommandName Add-SqlAvailabilityDatabase -Scope It -Times 1 -Exactly -ParameterFilter { $InputObject.PrimaryReplicaServerName -eq 'Server1' -and $InputObject.LocalReplicaRole -eq 'Primary' }
@@ -2080,7 +2083,7 @@ REVERT'
                             Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                             Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                             Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                                Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                             $mockServerObject.Databases['DB1'].($prerequisiteCheck.Key) = $originalValue
                         }
@@ -2146,7 +2149,7 @@ REVERT'
                             Assert-MockCalled -CommandName Join-Path -Scope It -Times 0 -Exactly -ParameterFilter { $ChildPath -like '*_Log_*.trn' }
                             Assert-MockCalled -CommandName Remove-Item -Scope It -Times 0 -Exactly
                             Assert-MockCalled -CommandName Remove-SqlAvailabilityDatabase -Scope It -Times 0 -Exactly
-                                Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
+                            Assert-MockCalled -CommandName Test-ImpersonatePermissions -Scope It -Times 1 -Exactly
 
                             $mockServerObject.Databases['DB1'].($filestreamProperty.Key) = $originalValue
                         }
@@ -2689,25 +2692,26 @@ REVERT'
                 #endregion Server mocks
 
                 #region Invoke Query Mock
+                $mockDataSetQueryFileExist = New-MockDataSet -ColumnNames @('File exists', 'File is a Directory', 'Parent Directory Exists') `
+                    -Rows @(@{
+                        'File exists'             = 0
+                        'File is a Directory'     = 1
+                        'Parent Directory Exists' = 1
+                    })
 
                 $mockResultInvokeQueryFileExist = {
-                    return @{
-                        Tables = @{
-                            Rows = @{
-                                'File is a Directory' = 1
-                            }
-                        }
-                    }
+                    return $mockDataSetQueryFileExist
                 }
 
+                $mockDataSetQueryFileNotExist = New-MockDataSet -ColumnNames @('File exists', 'File is a Directory', 'Parent Directory Exists') `
+                    -Rows @(@{
+                        'File exists'             = 0
+                        'File is a Directory'     = 0
+                        'Parent Directory Exists' = 0
+                    })
+
                 $mockResultInvokeQueryFileNotExist = {
-                    return @{
-                        Tables = @{
-                            Rows = @{
-                                'File is a Directory' = 0
-                            }
-                        }
-                    }
+                    return $mockDataSetQueryFileNotExist
                 }
 
                 $mockInvokeQueryParameterRestoreDatabase = {
@@ -3054,18 +3058,18 @@ REVERT'
                 }
 
                 It 'Should return an empty object when no matching databases are found' {
-                     $getMatchingDatabaseNamesParameters.DatabaseName = @('DatabaseNotHere')
+                    $getMatchingDatabaseNamesParameters.DatabaseName = @('DatabaseNotHere')
 
-                     Get-MatchingDatabaseNames @getMatchingDatabaseNamesParameters | Should -BeNullOrEmpty
+                    Get-MatchingDatabaseNames @getMatchingDatabaseNamesParameters | Should -BeNullOrEmpty
                 }
 
                 It 'Should return an array of database names that match the defined databases' {
-                     $results = Get-MatchingDatabaseNames @getMatchingDatabaseNamesParameters
+                    $results = Get-MatchingDatabaseNames @getMatchingDatabaseNamesParameters
 
-                     foreach ( $result in $results )
-                     {
-                         $mockPresentDatabaseNames -contains $result | Should -Be $true
-                     }
+                    foreach ( $result in $results )
+                    {
+                        $mockPresentDatabaseNames -contains $result | Should -Be $true
+                    }
                 }
 
                 It 'Should return an array of database names that match the defined databases when the case does not match' {
@@ -3077,7 +3081,7 @@ REVERT'
                     {
                         $mockPresentDatabaseNames -contains $result | Should -Be $true
                     }
-               }
+                }
             }
         }
 

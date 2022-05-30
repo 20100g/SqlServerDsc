@@ -622,3 +622,44 @@ function Test-SetupArgument
         $argumentValue | Should -Be $ExpectedArgument.$argumentKey -Because 'the argument should have been set to the correct value when calling setup.exe'
     }
 }
+
+function New-MockDataSet
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String []]
+        $ColumnNames,
+        [Parameter(Mandatory = $true)]
+        [PSCustomObject[]]
+        $Rows,
+        [Parameter()]
+        [String]
+        $DataTableName = "Table"
+    )
+
+    $dt = New-Object System.Data.DataTable
+    $dt.TableName = $DataTableName
+
+    foreach ($col in $ColumnNames)
+    {
+        $newCol = New-Object System.Data.DataColumn($col)
+        $dt.columns.Add($newCol)
+    }
+
+    foreach ($row in $Rows)
+    {
+        $newRow = $dt.NewRow()
+
+        foreach ($cell in $row.GetEnumerator())
+        {
+            $newRow[$cell.Name] = $cell.Value
+        }
+        $dt.rows.Add($newRow)
+    }
+
+    $ds = New-Object System.Data.DataSet
+    $ds.Tables.Add($dt)
+
+    return $ds
+}

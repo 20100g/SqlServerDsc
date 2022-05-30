@@ -380,7 +380,10 @@ function Set-TargetResource
                     $fileExistsQuery = "EXEC master.dbo.xp_fileexist '$databaseFileDirectory'"
                     $fileExistsResult = Invoke-Query -ServerName $currentAvailabilityGroupReplicaServerObject.NetName -InstanceName $currentAvailabilityGroupReplicaServerObject.ServiceName -Database master -Query $fileExistsQuery -WithResults
 
-                    if ( $fileExistsResult.Tables.Rows.'File is a Directory' -ne 1 )
+                    # NOTE: Table returned by 'xp_fileexist' has localized column names (eg. on an english system : "File exists | File is a Directory | Parent Directory Exists")
+                    #       To avoid errors on non-English systems, we check whether a directory exists using the column index (1) rather than the name of the column
+                    $fileExistsResultRow = ($fileExistsResult.Tables[0] | Select-Object -First 1)
+                    if ( $fileExistsResultRow[1] -ne 1 )
                     {
                         $missingDirectories += $databaseFileDirectory
                     }
